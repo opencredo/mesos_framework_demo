@@ -63,7 +63,6 @@ public class MainRunner {
 
 		int status = driver.run() == Protos.Status.DRIVER_STOPPED ? 0 : 1;
 
-		Thread.sleep(1000000);
 		// Ensure that the driver process terminates.
 		driver.stop();
 

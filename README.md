@@ -15,10 +15,11 @@ This will produce the artefact: target/example-framework-1.0-SNAPSHOT-jar-with-d
 Run
 ---
 
-*You'll need the mesos shared library in your library path* 
 
 Run the jar:
 
 ```
-java -jar target/example-framework-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -Djava.library.path=/usr/local/lib -jar target/example-framework-1.0-SNAPSHOT-jar-with-dependencies.jar zk://localhost:2181/mesos
 ```
+
+*You'll need to point java to the mesos shared library, which is usually found in /usr/local/lib* 
