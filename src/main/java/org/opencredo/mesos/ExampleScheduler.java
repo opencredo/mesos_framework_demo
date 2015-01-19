@@ -12,80 +12,69 @@ import java.util.List;
 public class ExampleScheduler implements Scheduler {
 
 	private int taskIdCounter = 0;
+	private Protos.ExecutorInfo executorInfo;
 
-	private Protos.ExecutorInfo executorHello;
-
-	public ExampleScheduler() {
-		String commandHello = "echo hello";
-		Protos.CommandInfo commandInfoHello = Protos.CommandInfo.newBuilder()
-				.setValue(commandHello).build();
-
-		executorHello = Protos.ExecutorInfo
-				.newBuilder()
-				.setExecutorId(
-						Protos.ExecutorID.newBuilder()
-								.setValue("CrawlExecutor"))
-				.setCommand(commandInfoHello).setName("Hello Executor")
-				.setSource("hello").build();
+	public ExampleScheduler(Protos.ExecutorInfo executorInfo) {
+		this.executorInfo = executorInfo;
 	}
 
 	@Override
 	public void registered(SchedulerDriver schedulerDriver,
 			Protos.FrameworkID frameworkID, Protos.MasterInfo masterInfo) {
 		System.out.println("Registered" + frameworkID);
-
 	}
 
 	@Override
 	public void reregistered(SchedulerDriver schedulerDriver,
 			Protos.MasterInfo masterInfo) {
-		System.out.println("Registered");
+		System.out.println("Re-registered");
 	}
 
 	@Override
 	public void resourceOffers(SchedulerDriver schedulerDriver,
 			List<Protos.Offer> offers) {
-		Collection<Protos.OfferID> offerIds = new ArrayList<Protos.OfferID>();
-		Collection<Protos.TaskInfo> tasks = new ArrayList<Protos.TaskInfo>();
 
 		for (Protos.Offer offer : offers) {
 			System.out.println("Offer");
 			System.out.println(offer);
 
-			Protos.TaskID taskId = Protos.TaskID.newBuilder()
-					.setValue(Integer.toString(taskIdCounter++)).build();
-
-			Protos.TaskInfo task = Protos.TaskInfo
-					.newBuilder()
-					.setName("task " + taskId)
-					.setTaskId(taskId)
+			Protos.TaskID taskId = buildNewTaskID();
+			Protos.TaskInfo task = Protos.TaskInfo.newBuilder()
+					.setName("task " + taskId).setTaskId(taskId)
 					.setSlaveId(offer.getSlaveId())
-					.addResources(
-							Protos.Resource
-									.newBuilder()
-									.setName("cpus")
-									.setType(Protos.Value.Type.SCALAR)
-									.setScalar(
-											Protos.Value.Scalar.newBuilder()
-													.setValue(1)))
-					.addResources(
-							Protos.Resource
-									.newBuilder()
-									.setName("mem")
-									.setType(Protos.Value.Type.SCALAR)
-									.setScalar(
-											Protos.Value.Scalar.newBuilder()
-													.setValue(128)))
-					.setData(ByteString.copyFromUtf8("jonas"))
-					.setExecutor(Protos.ExecutorInfo.newBuilder(executorHello))
+					.addResources(buildResource("cpus", 1))
+					.addResources(buildResource("mem", 128))
+					.setData(ByteString.copyFromUtf8("pi index"))
+					.setExecutor(Protos.ExecutorInfo.newBuilder(executorInfo))
 					.build();
-			tasks.add(task);
-			offerIds.add(offer.getId());
 
+			launchTask(schedulerDriver, offer, task);
 		}
-		System.out.println("Scheduling " + tasks);
-		schedulerDriver.launchTasks(offerIds, tasks);
+	}
 
+	private void launchTask(SchedulerDriver schedulerDriver,
+			Protos.Offer offer, Protos.TaskInfo task) {
+		Collection<Protos.TaskInfo> tasks = new ArrayList<Protos.TaskInfo>();
+		Collection<Protos.OfferID> offerIDs = new ArrayList<Protos.OfferID>();
+		System.out.println("Scheduling " + task);
+		tasks.add(task);
+		offerIDs.add(offer.getId());
+		schedulerDriver.launchTasks(offerIDs, tasks);
+	}
+
+	private Protos.TaskID buildNewTaskID() {
+		return Protos.TaskID.newBuilder()
+				.setValue(Integer.toString(taskIdCounter++)).build();
+	}
+
+	private Protos.Resource buildResource(String name, double value) {
+		return Protos.Resource.newBuilder().setName(name)
+				.setType(Protos.Value.Type.SCALAR)
+				.setScalar(buildScalar(value)).build();
+	}
+
+	private Protos.Value.Scalar.Builder buildScalar(double value) {
+		return Protos.Value.Scalar.newBuilder().setValue(value);
 	}
 
 	@Override
