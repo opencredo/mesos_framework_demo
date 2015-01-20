@@ -35,8 +35,8 @@ public class ExampleScheduler implements Scheduler {
 			List<Protos.Offer> offers) {
 
 		for (Protos.Offer offer : offers) {
-			System.out.println("Offer");
-			System.out.println(offer);
+			// System.out.println("Offer");
+			// System.out.println(offer);
 
 			Protos.TaskID taskId = buildNewTaskID();
 			Protos.TaskInfo task = Protos.TaskInfo.newBuilder()
@@ -44,7 +44,7 @@ public class ExampleScheduler implements Scheduler {
 					.setSlaveId(offer.getSlaveId())
 					.addResources(buildResource("cpus", 1))
 					.addResources(buildResource("mem", 128))
-					.setData(ByteString.copyFromUtf8("pi index"))
+					.setData(ByteString.copyFromUtf8("" + taskIdCounter))
 					.setExecutor(Protos.ExecutorInfo.newBuilder(executorInfo))
 					.build();
 
@@ -56,7 +56,7 @@ public class ExampleScheduler implements Scheduler {
 			Protos.Offer offer, Protos.TaskInfo task) {
 		Collection<Protos.TaskInfo> tasks = new ArrayList<Protos.TaskInfo>();
 		Collection<Protos.OfferID> offerIDs = new ArrayList<Protos.OfferID>();
-		System.out.println("Scheduling " + task);
+		// System.out.println("Scheduling " + task);
 		tasks.add(task);
 		offerIDs.add(offer.getId());
 		schedulerDriver.launchTasks(offerIDs, tasks);
@@ -80,40 +80,41 @@ public class ExampleScheduler implements Scheduler {
 	@Override
 	public void offerRescinded(SchedulerDriver schedulerDriver,
 			Protos.OfferID offerID) {
-
+		System.out.println("This offer's been rescinded. Tough luck, cowboy.");
 	}
 
 	@Override
 	public void statusUpdate(SchedulerDriver schedulerDriver,
 			Protos.TaskStatus taskStatus) {
-
+		System.out.println("Status update: " + taskStatus.getState() + " from "
+				+ taskStatus.getTaskId().getValue());
 	}
-
 	@Override
 	public void frameworkMessage(SchedulerDriver schedulerDriver,
 			Protos.ExecutorID executorID, Protos.SlaveID slaveID, byte[] bytes) {
-
+		System.out.println("Received message (scheduler): " + new String(bytes)
+				+ " from " + executorID.getValue());
 	}
 
 	@Override
 	public void disconnected(SchedulerDriver schedulerDriver) {
-
+		System.out.println("We got disconnected yo");
 	}
 
 	@Override
 	public void slaveLost(SchedulerDriver schedulerDriver,
 			Protos.SlaveID slaveID) {
-
+		System.out.println("Lost slave: " + slaveID);
 	}
 
 	@Override
 	public void executorLost(SchedulerDriver schedulerDriver,
 			Protos.ExecutorID executorID, Protos.SlaveID slaveID, int i) {
-
+		System.out.println("Lost executor on slave " + slaveID);
 	}
 
 	@Override
 	public void error(SchedulerDriver schedulerDriver, String s) {
-
+		System.out.println("We've got errors, man: " + s);
 	}
 }

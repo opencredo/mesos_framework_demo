@@ -11,31 +11,24 @@ public class CalculatePiExecutor implements Executor {
 	public void registered(ExecutorDriver executorDriver,
 			Protos.ExecutorInfo executorInfo,
 			Protos.FrameworkInfo frameworkInfo, Protos.SlaveInfo slaveInfo) {
-
-		System.out.println("This little fella framework has been registered");
 	}
 
 	@Override
 	public void reregistered(ExecutorDriver executorDriver,
 			Protos.SlaveInfo slaveInfo) {
-		System.out
-				.println("This little fella framework has been re-registered");
 	}
 
 	@Override
 	public void disconnected(ExecutorDriver executorDriver) {
-		System.out.println("This little fella framework has been disconnect");
 	}
 
 	@Override
 	public void launchTask(ExecutorDriver executorDriver,
 			Protos.TaskInfo taskInfo) {
-		System.out.println("Launching new task: "
-				+ taskInfo.getTaskId().getValue());
-		System.out
-				.println("Task data is: " + taskInfo.getData().toStringUtf8());
 
-		executorDriver.sendFrameworkMessage("ALRIGHT".getBytes());
+		Integer piIndex = Integer.parseInt(taskInfo.getData().toStringUtf8());
+		String reply = piIndex.toString();
+		executorDriver.sendFrameworkMessage(reply.getBytes());
 		Protos.TaskStatus status = Protos.TaskStatus.newBuilder()
 				.setTaskId(taskInfo.getTaskId())
 				.setState(Protos.TaskState.TASK_FINISHED).build();
