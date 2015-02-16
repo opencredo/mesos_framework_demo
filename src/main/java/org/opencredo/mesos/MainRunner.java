@@ -10,9 +10,9 @@ import org.apache.mesos.Scheduler;
 public class MainRunner {
 
     static String frameworkName = "framework-example";
-    static String executorName = "PICalculator";
+    static String executorName = "ExampleExecutor";
     static String path = "/vagrant/example-framework-1.0-SNAPSHOT-jar-with-dependencies.jar";
-    static String command = "java -cp /vagrant/example-framework-1.0-SNAPSHOT-jar-with-dependencies.jar org.opencredo.mesos.CalculatePiExecutor";
+    static String command = "java -cp /vagrant/example-framework-1.0-SNAPSHOT-jar-with-dependencies.jar org.opencredo.mesos.ExampleExecutor";
 
 
     private static FrameworkInfo getFrameworkInfo() {

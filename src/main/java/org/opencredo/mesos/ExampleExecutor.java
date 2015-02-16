@@ -5,7 +5,7 @@ import org.apache.mesos.ExecutorDriver;
 import org.apache.mesos.MesosExecutorDriver;
 import org.apache.mesos.Protos;
 
-public class CalculatePiExecutor implements Executor {
+public class ExampleExecutor implements Executor {
 
 	@Override
 	public void registered(ExecutorDriver executorDriver,
@@ -26,8 +26,8 @@ public class CalculatePiExecutor implements Executor {
 	public void launchTask(ExecutorDriver executorDriver,
 			Protos.TaskInfo taskInfo) {
 
-		Integer piIndex = Integer.parseInt(taskInfo.getData().toStringUtf8());
-		String reply = piIndex.toString();
+		Integer id = Integer.parseInt(taskInfo.getData().toStringUtf8());
+		String reply = id.toString();
 		executorDriver.sendFrameworkMessage(reply.getBytes());
 		Protos.TaskStatus status = Protos.TaskStatus.newBuilder()
 				.setTaskId(taskInfo.getTaskId())
@@ -57,7 +57,7 @@ public class CalculatePiExecutor implements Executor {
 
 	public static void main(String[] args) throws Exception {
 		MesosExecutorDriver driver = new MesosExecutorDriver(
-				new CalculatePiExecutor());
+				new ExampleExecutor());
 		System.exit(driver.run() == Protos.Status.DRIVER_STOPPED ? 0 : 1);
 	}
 }

@@ -38,6 +38,7 @@ public class ExampleScheduler implements Scheduler {
 			// System.out.println("Offer");
 			// System.out.println(offer);
 
+
 			Protos.TaskID taskId = buildNewTaskID();
 			Protos.TaskInfo task = Protos.TaskInfo.newBuilder()
 					.setName("task " + taskId).setTaskId(taskId)
